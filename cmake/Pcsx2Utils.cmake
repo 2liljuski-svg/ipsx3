@@ -60,3 +60,25 @@ function(write_svnrev_h)
     # In PCSX2, this writes SVN revision info; we'll use git instead
     set(SVN_REV "0" PARENT_SCOPE)
 endfunction()
+
+# Setup file properties for targets (e.g., set correct file types for Xcode)
+function(fixup_file_properties target)
+    get_target_property(SOURCES ${target} SOURCES)
+    if(APPLE)
+        foreach(source IN LISTS SOURCES)
+            # Set the right file types for .inl and .h files in Xcode
+            if("${source}" MATCHES "\\.(inl|h)$")
+                set_source_files_properties("${source}" PROPERTIES XCODE_EXPLICIT_FILE_TYPE sourcecode.cpp.h)
+            endif()
+            # Set file type for compiled Qt translation files
+            if("${source}" MATCHES "\\.(qm)$")
+                set_source_files_properties("${source}" PROPERTIES XCODE_EXPLICIT_FILE_TYPE compiled)
+            endif()
+            # CMake makefile and ninja generators will attempt to share one PCH for both cpp and mm files
+            # That's not actually OK
+            if("${source}" MATCHES "\\.mm$")
+                set_source_files_properties("${source}" PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
+            endif()
+        endforeach()
+    endif()
+endfunction()
