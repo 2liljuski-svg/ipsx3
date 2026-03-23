@@ -38,6 +38,9 @@ echo "=========================================="
 echo " iPSX2 Device Build"
 echo " BUILD_HASH: $BUILD_HASH"
 echo " SDK: $SDK  CONFIG: $CONFIG"
+echo " REPO_ROOT: $REPO_ROOT"
+echo " SRC_DIR: $SRC_DIR"
+echo " BUILD_DIR: $BUILD_DIR"
 echo "=========================================="
 
 # CMake configure (always reconfigure to pick up version/source changes)
@@ -47,7 +50,7 @@ cmake -S "$SRC_DIR" -B "$BUILD_DIR" -G Xcode \
     -DCMAKE_OSX_SYSROOT=$SDK \
     -DCMAKE_OSX_ARCHITECTURES=arm64 \
     -DCMAKE_OSX_DEPLOYMENT_TARGET=16.0 \
-    -DiPSX2_REAL_DEVICE=ON 2>&1 | tail -3
+    -DiPSX2_REAL_DEVICE=ON
 
 # Clean (if requested)
 if [ "$DO_CLEAN" -eq 1 ]; then
