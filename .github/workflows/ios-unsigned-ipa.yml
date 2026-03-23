@@ -1,0 +1,39 @@
+name: iPSX2 iOS unsigned IPA CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-ios-unsigned:
+    name: Build unsigned IPA (macos-latest)
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          brew update
+          brew install cmake || true
+
+      - name: Build unsigned IPA
+        run: |
+          chmod +x ./build_device.sh
+          ./build_device.sh --clean --ipa-only
+
+      - name: List output files
+        run: |
+          echo "Release dir content:"
+          ls -al release
+
+      - name: Upload unsigned IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ipsx2-unsigned-ipa
+          path: release/iPSX2.ipa
