@@ -5,7 +5,7 @@
 #   --clean:    Clean before build
 set -e
 
-REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+REPO_ROOT="$(cd "$(dirname "$0")" && pwd)"
 SRC_DIR="$REPO_ROOT/src/cpp"
 BUILD_DIR="$REPO_ROOT/build/ios_device"
 SDK=iphoneos
