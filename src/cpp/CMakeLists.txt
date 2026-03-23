@@ -112,6 +112,16 @@ endif()
 
 # Always use bundled versions for these libraries
 add_subdirectory(3rdparty/fmt)
+# Disable libwebp tools for iOS builds
+set(WEBP_BUILD_ANIM_UTILS OFF CACHE BOOL "Build animation utilities." FORCE)
+set(WEBP_BUILD_CWEBP OFF CACHE BOOL "Build the cwebp command line tool." FORCE)
+set(WEBP_BUILD_DWEBP OFF CACHE BOOL "Build the dwebp command line tool." FORCE)
+set(WEBP_BUILD_GIF2WEBP OFF CACHE BOOL "Build the gif2webp conversion tool." FORCE)
+set(WEBP_BUILD_IMG2WEBP OFF CACHE BOOL "Build the img2webp animation tool." FORCE)
+set(WEBP_BUILD_VWEBP OFF CACHE BOOL "Build the vwebp viewer tool." FORCE)
+set(WEBP_BUILD_WEBPINFO OFF CACHE BOOL "Build the webpinfo command line tool." FORCE)
+set(WEBP_BUILD_WEBPMUX OFF CACHE BOOL "Build the webpmux command line tool." FORCE)
+set(WEBP_BUILD_EXTRAS OFF CACHE BOOL "Build extras." FORCE)
 add_subdirectory(3rdparty/libwebp)
 add_subdirectory(3rdparty/fast_float)
 add_subdirectory(3rdparty/rapidyaml)
@@ -131,6 +141,11 @@ add_subdirectory(3rdparty/demangler)
 add_subdirectory(3rdparty/ccc)
 add_subdirectory(3rdparty/imgui)
 add_subdirectory(3rdparty/plutosvg1)
+
+# Only build bundled zlib on non-iOS platforms
+if(NOT CMAKE_SYSTEM_NAME STREQUAL "iOS")
+    add_subdirectory(3rdparty/zlib)
+endif()
 
 # Create aliases for libraries that have different target names
 if(TARGET webp)
