@@ -32,7 +32,14 @@ done
 GIT_HASH=$(cd "$REPO_ROOT" && git rev-parse --short HEAD 2>/dev/null || echo "unknown")
 BUILD_TS=$(date '+%Y%m%d_%H%M%S')
 BUILD_HASH="${GIT_HASH}_${BUILD_TS}"
-NCPU=$(sysctl -n hw.ncpu)
+# Cross-platform CPU detection
+if command -v nproc >/dev/null 2>&1; then
+    NCPU=$(nproc)
+elif command -v sysctl >/dev/null 2>&1; then
+    NCPU=$(sysctl -n hw.ncpu 2>/dev/null | awk '{print $2}')
+else
+    NCPU=4  # fallback
+fi
 
 echo "=========================================="
 echo " iPSX2 Device Build"
