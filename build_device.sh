@@ -6,6 +6,10 @@
 set -e
 
 REPO_ROOT="$(cd "$(dirname "$0")" && pwd)"
+# Handle case where GitHub Actions checks out to a subdirectory
+if [ ! -d "$REPO_ROOT/src/cpp" ] && [ -d "$REPO_ROOT/../src/cpp" ]; then
+    REPO_ROOT="$REPO_ROOT/.."
+fi
 SRC_DIR="$REPO_ROOT/src/cpp"
 BUILD_DIR="$REPO_ROOT/build/ios_device"
 SDK=iphoneos
