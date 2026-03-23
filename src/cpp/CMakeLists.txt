@@ -101,6 +101,42 @@ endif()
 get_git_version_info()
 write_svnrev_h()
 
+# Add bundled 3rdparty libraries when system versions are not found
+if(NOT SDL3_FOUND)
+    add_subdirectory(3rdparty/SDL3)
+endif()
+
+if(NOT Freetype_FOUND)
+    add_subdirectory(3rdparty/freetype)
+endif()
+
+# Always use bundled versions for these libraries
+add_subdirectory(3rdparty/fmt)
+add_subdirectory(3rdparty/libwebp)
+add_subdirectory(3rdparty/fast_float)
+add_subdirectory(3rdparty/rapidyaml)
+add_subdirectory(3rdparty/cpuinfo)
+add_subdirectory(3rdparty/libchdr)
+add_subdirectory(3rdparty/libzip)
+add_subdirectory(3rdparty/cubeb)
+add_subdirectory(3rdparty/rcheevos)
+add_subdirectory(3rdparty/simpleini)
+add_subdirectory(3rdparty/freesurround)
+add_subdirectory(3rdparty/zstd)
+add_subdirectory(3rdparty/lz4)
+add_subdirectory(3rdparty/zlib)
+add_subdirectory(3rdparty/lzma)
+add_subdirectory(3rdparty/soundtouch)
+add_subdirectory(3rdparty/demangler)
+add_subdirectory(3rdparty/ccc)
+add_subdirectory(3rdparty/imgui)
+add_subdirectory(3rdparty/plutosvg1)
+
+# Create aliases for libraries that have different target names
+if(TARGET webp)
+    add_library(WebP::libwebp ALIAS webp)
+endif()
+
 # make common
 add_subdirectory(common)
 
