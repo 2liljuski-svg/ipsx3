@@ -82,3 +82,62 @@ function(fixup_file_properties target)
         endforeach()
     endif()
 endfunction()
+
+# Get recursive include directories from a target
+function(get_recursive_include_directories output target inc_prop link_prop)
+    set(dirs)
+    get_target_property(inc_dirs ${target} ${inc_prop})
+    if(inc_dirs)
+        list(APPEND dirs ${inc_dirs})
+    endif()
+    
+    get_target_property(link_libs ${target} ${link_prop})
+    if(link_libs)
+        foreach(lib IN LISTS link_libs)
+            if(TARGET ${lib})
+                get_target_property(lib_inc_dirs ${lib} ${inc_prop})
+                if(lib_inc_dirs)
+                    list(APPEND dirs ${lib_inc_dirs})
+                endif()
+            endif()
+        endforeach()
+    endif()
+    
+    list(REMOVE_DUPLICATES dirs)
+    set(${output} "${dirs}" PARENT_SCOPE)
+endfunction()
+
+# Force an include directory to be processed last (to avoid conflicts)
+function(force_include_last_impl target include inc_prop link_prop)
+    get_recursive_include_directories(dirs ${target} ${inc_prop} ${link_prop})
+    set(remove)
+    foreach(dir IN LISTS dirs)
+        if("${dir}" MATCHES "${include}")
+            list(APPEND remove ${dir})
+        endif()
+    endforeach()
+    
+    if(NOT "${remove}" STREQUAL "")
+        get_target_property(sysdirs ${target} INTERFACE_SYSTEM_INCLUDE_DIRECTORIES)
+        if(NOT sysdirs)
+            set(sysdirs)
+        endif()
+        
+        # Move matching items to the end
+        list(REMOVE_ITEM dirs ${remove})
+        list(APPEND dirs ${remove})
+        
+        # Set them as system include directories
+        list(APPEND sysdirs ${remove})
+        list(REMOVE_DUPLICATES sysdirs)
+        
+        set_target_properties(${target} PROPERTIES
+            ${inc_prop} "${dirs}"
+            INTERFACE_SYSTEM_INCLUDE_DIRECTORIES "${sysdirs}")
+    endif()
+endfunction()
+
+# Public wrapper for force_include_last_impl
+function(force_include_last target include)
+    force_include_last_impl(${target} "${include}" INTERFACE_INCLUDE_DIRECTORIES INTERFACE_LINK_LIBRARIES)
+endfunction()
